@@ -226,6 +226,9 @@ export function ShiftForm({ title, description, existingShift }: ShiftFormProps)
               Escala dividida
             </Button>
           </div>
+          <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            Sobreposições agora são permitidas. Se dois agentes atuarem ao mesmo tempo, a hora simultânea entra como adicional proporcional no cálculo.
+          </div>
 
           <div className="space-y-4">
             {draft.blocks.map((block, index) => (

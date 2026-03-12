@@ -83,6 +83,8 @@ export type ShiftCalculation = {
   maxHours: number;
   proportionalHourlyRate: number;
   totalHours: number;
+  coveredHours: number;
+  overlapHours: number;
   totalAmount: number;
   isSplit: boolean;
   blocks: ShiftCalculationBlock[];

@@ -7,7 +7,7 @@ import {
 } from "@/types";
 import { DEFAULT_SETTINGS, WEEKDAY_LABELS } from "./constants";
 import { roundCurrency, toMonthKey } from "./formatters";
-import { calculateWorkedHours, intervalsOverlap, normalizeInterval } from "./time";
+import { calculateCoveredHours, calculateWorkedHours, normalizeInterval } from "./time";
 
 export function getWeekdayLabel(date: string) {
   return WEEKDAY_LABELS[new Date(`${date}T12:00:00`).getDay()];
@@ -63,7 +63,6 @@ export function validateShiftDraft(draft: ShiftDraft, settings: Settings = DEFAU
 
   const dayType = draft.date ? getDayTypeFromDate(draft.date) : "SUNDAY_TO_THURSDAY";
   const rule = getShiftRule(dayType, settings);
-  let totalHours = 0;
 
   draft.blocks.forEach((block, index) => {
     if (!block.agentId) {
@@ -80,23 +79,14 @@ export function validateShiftDraft(draft: ShiftDraft, settings: Settings = DEFAU
     if (workedHours <= 0) {
       errors.push(`O bloco ${index + 1} precisa ter duração válida.`);
     }
-
-    totalHours += workedHours;
   });
 
-  for (let index = 0; index < draft.blocks.length; index += 1) {
-    for (let compare = index + 1; compare < draft.blocks.length; compare += 1) {
-      if (intervalsOverlap(draft.blocks[index], draft.blocks[compare])) {
-        errors.push("Existem horários sobrepostos na mesma escala.");
-        index = draft.blocks.length;
-        break;
-      }
-    }
-  }
+  const completedBlocks = draft.blocks.filter((block) => block.startTime && block.endTime);
+  const coveredHours = calculateCoveredHours(completedBlocks, rule.startTime);
 
-  if (totalHours > rule.maxHours + 0.0001) {
+  if (coveredHours > rule.maxHours + 0.0001) {
     errors.push(
-      `A soma dos blocos não pode ultrapassar ${rule.maxHours} horas para esse tipo de escala.`,
+      `A cobertura total da escala não pode ultrapassar ${rule.maxHours} horas para esse tipo de escala.`,
     );
   }
 
@@ -125,6 +115,8 @@ export function calculateShift(draft: ShiftDraft, settings: Settings = DEFAULT_S
   });
 
   const totalHours = roundCurrency(blocks.reduce((sum, block) => sum + block.workedHours, 0));
+  const coveredHours = roundCurrency(calculateCoveredHours(blocks, rule.startTime));
+  const overlapHours = roundCurrency(Math.max(totalHours - coveredHours, 0));
   const totalAmount = roundCurrency(blocks.reduce((sum, block) => sum + block.amount, 0));
 
   return {
@@ -133,6 +125,8 @@ export function calculateShift(draft: ShiftDraft, settings: Settings = DEFAULT_S
     maxHours: rule.maxHours,
     proportionalHourlyRate,
     totalHours,
+    coveredHours,
+    overlapHours,
     totalAmount,
     isSplit: blocks.length > 1,
     blocks,

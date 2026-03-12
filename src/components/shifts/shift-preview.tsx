@@ -27,7 +27,12 @@ export function ShiftPreview({ calculation }: { calculation: ShiftCalculation | 
           <p className="mt-2 font-[family-name:var(--font-space-grotesk)] text-3xl font-semibold">
             {calculation.totalHours.toFixed(2)}h
           </p>
-          <p className="mt-2 text-sm text-slate-400">Limite do tipo: {calculation.maxHours}h</p>
+          <p className="mt-2 text-sm text-slate-400">
+            Cobertura real: {calculation.coveredHours.toFixed(2)}h
+            {calculation.overlapHours > 0
+              ? ` • adicional simultâneo: ${calculation.overlapHours.toFixed(2)}h`
+              : ` • limite do tipo: ${calculation.maxHours}h`}
+          </p>
         </div>
         <div className="rounded-3xl bg-white/5 p-4">
           <div className="flex items-center gap-2 text-sm text-slate-300">
@@ -37,7 +42,9 @@ export function ShiftPreview({ calculation }: { calculation: ShiftCalculation | 
           <p className="mt-2 font-[family-name:var(--font-space-grotesk)] text-3xl font-semibold">
             {formatCurrency(calculation.proportionalHourlyRate)}
           </p>
-          <p className="mt-2 text-sm text-slate-400">Distribuido automaticamente com o bonus incluso</p>
+          <p className="mt-2 text-sm text-slate-400">
+            Sobreposição conta como hora adicional proporcional para o agente
+          </p>
         </div>
         <div className="rounded-3xl bg-white/5 p-4">
           <div className="flex items-center gap-2 text-sm text-slate-300">

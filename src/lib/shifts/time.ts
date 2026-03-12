@@ -10,8 +10,29 @@ export function minutesToHours(minutes: number) {
 }
 
 export function normalizeInterval(startTime: string, endTime: string) {
-  const startMinutes = timeToMinutes(startTime);
+  return normalizeIntervalFromReference(startTime, endTime);
+}
+
+export function normalizeIntervalFromReference(
+  startTime: string,
+  endTime: string,
+  referenceStartTime?: string,
+) {
+  const referenceMinutes =
+    typeof referenceStartTime === "string" ? timeToMinutes(referenceStartTime) : null;
+
+  let startMinutes = timeToMinutes(startTime);
   let endMinutes = timeToMinutes(endTime);
+
+  if (referenceMinutes !== null) {
+    if (startMinutes < referenceMinutes) {
+      startMinutes += MINUTES_PER_DAY;
+    }
+
+    if (endMinutes < referenceMinutes) {
+      endMinutes += MINUTES_PER_DAY;
+    }
+  }
 
   if (endMinutes <= startMinutes) {
     endMinutes += MINUTES_PER_DAY;
@@ -28,12 +49,40 @@ export function calculateWorkedHours(startTime: string, endTime: string) {
   return minutesToHours(normalizeInterval(startTime, endTime).durationMinutes);
 }
 
-export function intervalsOverlap(
-  first: { startTime: string; endTime: string },
-  second: { startTime: string; endTime: string },
+export function calculateCoveredHours(
+  blocks: Array<{ startTime: string; endTime: string }>,
+  referenceStartTime?: string,
 ) {
-  const a = normalizeInterval(first.startTime, first.endTime);
-  const b = normalizeInterval(second.startTime, second.endTime);
+  if (blocks.length === 0) {
+    return 0;
+  }
 
-  return a.startMinutes < b.endMinutes && b.startMinutes < a.endMinutes;
+  const intervals = blocks
+    .map((block) => normalizeIntervalFromReference(block.startTime, block.endTime, referenceStartTime))
+    .sort((current, next) => current.startMinutes - next.startMinutes);
+
+  const merged = intervals.reduce<Array<{ startMinutes: number; endMinutes: number }>>(
+    (accumulator, interval) => {
+      const last = accumulator[accumulator.length - 1];
+
+      if (!last || interval.startMinutes > last.endMinutes) {
+        accumulator.push({
+          startMinutes: interval.startMinutes,
+          endMinutes: interval.endMinutes,
+        });
+        return accumulator;
+      }
+
+      last.endMinutes = Math.max(last.endMinutes, interval.endMinutes);
+      return accumulator;
+    },
+    [],
+  );
+
+  const coveredMinutes = merged.reduce(
+    (sum, interval) => sum + (interval.endMinutes - interval.startMinutes),
+    0,
+  );
+
+  return minutesToHours(coveredMinutes);
 }
