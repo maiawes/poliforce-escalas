@@ -118,7 +118,10 @@ export function calculateShift(draft: ShiftDraft, settings: Settings = DEFAULT_S
     const manualAmount = hasManualAmount ? roundCurrency(Number(block.manualAmount)) : null;
 
     return {
-      ...block,
+      agentId: block.agentId,
+      agentName: block.agentName,
+      startTime: block.startTime,
+      endTime: block.endTime,
       workedHours,
       hourlyRateCalculated: proportionalHourlyRate,
       calculatedAmount,

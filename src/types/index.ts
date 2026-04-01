@@ -75,7 +75,7 @@ export type ShiftDraft = {
   blocks: ShiftBlockDraft[];
 };
 
-export type ShiftCalculationBlock = ShiftBlockDraft & {
+export type ShiftCalculationBlock = Omit<ShiftBlockDraft, "manualAmount"> & {
   workedHours: number;
   calculatedAmount: number;
   amount: number;
