@@ -33,6 +33,10 @@ function getInitialDraft(existingShift?: ShiftWithBlocks | null): ShiftDraft {
         agentName: block.agentName,
         startTime: block.startTime,
         endTime: block.endTime,
+        manualAmount:
+          block.isAmountManual && typeof block.manualAmount === "number"
+            ? block.manualAmount.toFixed(2)
+            : "",
       })),
     };
   }
@@ -82,7 +86,7 @@ export function ShiftForm({ title, description, existingShift }: ShiftFormProps)
 
   const setBlock = (
     index: number,
-    field: "agentId" | "agentName" | "startTime" | "endTime",
+    field: "agentId" | "agentName" | "startTime" | "endTime" | "manualAmount",
     value: string,
   ) => {
     setDraft((current) => ({
@@ -246,7 +250,7 @@ export function ShiftForm({ title, description, existingShift }: ShiftFormProps)
                     </button>
                   ) : null}
                 </div>
-                <div className="grid gap-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr]">
+                <div className="grid gap-4 lg:grid-cols-[1.1fr_0.7fr_0.7fr_0.85fr]">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">Agente</label>
                     <Select
@@ -275,6 +279,28 @@ export function ShiftForm({ title, description, existingShift }: ShiftFormProps)
                       type="time"
                       value={block.endTime}
                       onChange={(event) => setBlock(index, "endTime", event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-sm font-medium text-slate-700">Valor do bloco</label>
+                      {block.manualAmount ? (
+                        <button
+                          type="button"
+                          onClick={() => setBlock(index, "manualAmount", "")}
+                          className="text-xs font-medium text-sky-700"
+                        >
+                          Automático
+                        </button>
+                      ) : null}
+                    </div>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="Auto"
+                      value={block.manualAmount ?? ""}
+                      onChange={(event) => setBlock(index, "manualAmount", event.target.value)}
                     />
                   </div>
                 </div>

@@ -50,6 +50,9 @@ export type ShiftBlock = {
   endTime: string;
   workedHours: number;
   hourlyRateCalculated: number;
+  calculatedAmount?: number;
+  manualAmount?: number | null;
+  isAmountManual?: boolean;
   amount: number;
   sortOrder: number;
 };
@@ -63,6 +66,7 @@ export type ShiftBlockDraft = {
   agentName: string;
   startTime: string;
   endTime: string;
+  manualAmount?: string;
 };
 
 export type ShiftDraft = {
@@ -73,8 +77,11 @@ export type ShiftDraft = {
 
 export type ShiftCalculationBlock = ShiftBlockDraft & {
   workedHours: number;
+  calculatedAmount: number;
   amount: number;
   hourlyRateCalculated: number;
+  manualAmount?: number | null;
+  isAmountManual: boolean;
 };
 
 export type ShiftCalculation = {

@@ -79,6 +79,14 @@ export function validateShiftDraft(draft: ShiftDraft, settings: Settings = DEFAU
     if (workedHours <= 0) {
       errors.push(`O bloco ${index + 1} precisa ter duração válida.`);
     }
+
+    if (
+      typeof block.manualAmount === "string" &&
+      block.manualAmount.trim() !== "" &&
+      Number(block.manualAmount) < 0
+    ) {
+      errors.push(`O valor manual do bloco ${index + 1} não pode ser negativo.`);
+    }
   });
 
   const completedBlocks = draft.blocks.filter((block) => block.startTime && block.endTime);
@@ -104,13 +112,19 @@ export function calculateShift(draft: ShiftDraft, settings: Settings = DEFAULT_S
 
   const blocks = draft.blocks.map((block) => {
     const workedHours = roundCurrency(calculateWorkedHours(block.startTime, block.endTime));
-    const rawAmount = workedHours * (rule.totalAmount / rule.maxHours);
+    const calculatedAmount = roundCurrency(workedHours * (rule.totalAmount / rule.maxHours));
+    const hasManualAmount =
+      typeof block.manualAmount === "string" && block.manualAmount.trim() !== "";
+    const manualAmount = hasManualAmount ? roundCurrency(Number(block.manualAmount)) : null;
 
     return {
       ...block,
       workedHours,
       hourlyRateCalculated: proportionalHourlyRate,
-      amount: roundCurrency(rawAmount),
+      calculatedAmount,
+      manualAmount,
+      isAmountManual: hasManualAmount,
+      amount: hasManualAmount && manualAmount !== null ? manualAmount : calculatedAmount,
     };
   });
 
@@ -143,6 +157,7 @@ export function createEmptyBlock() {
     agentName: "",
     startTime: "",
     endTime: "",
+    manualAmount: "",
   };
 }
 

@@ -68,7 +68,14 @@ export function ShiftPreview({ calculation }: { calculation: ShiftCalculation | 
               {block.startTime} às {block.endTime}
             </span>
             <span className="text-slate-300">{block.workedHours.toFixed(2)}h</span>
-            <span className="font-semibold text-emerald-300">{formatCurrency(block.amount)}</span>
+            <div className="text-left md:text-right">
+              <span className="font-semibold text-emerald-300">{formatCurrency(block.amount)}</span>
+              <p className="text-xs text-slate-400">
+                {block.isAmountManual
+                  ? `Manual • auto ${formatCurrency(block.calculatedAmount)}`
+                  : "Automático"}
+              </p>
+            </div>
           </div>
         ))}
       </div>

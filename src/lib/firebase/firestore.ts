@@ -227,6 +227,9 @@ export async function saveShift(draft: ShiftDraft, settings: Settings, shiftId?:
         endTime: block.endTime,
         workedHours: block.workedHours,
         hourlyRateCalculated: block.hourlyRateCalculated,
+        calculatedAmount: block.calculatedAmount,
+        manualAmount: block.manualAmount,
+        isAmountManual: block.isAmountManual,
         amount: block.amount,
         sortOrder: index,
       });
@@ -265,6 +268,9 @@ export async function saveShift(draft: ShiftDraft, settings: Settings, shiftId?:
       endTime: block.endTime,
       workedHours: block.workedHours,
       hourlyRateCalculated: block.hourlyRateCalculated,
+      calculatedAmount: block.calculatedAmount,
+      manualAmount: block.manualAmount,
+      isAmountManual: block.isAmountManual,
       amount: block.amount,
       sortOrder: index,
     });
@@ -294,6 +300,10 @@ export async function duplicateShift(shift: ShiftWithBlocks, newDate: string, se
         agentName: block.agentName,
         startTime: block.startTime,
         endTime: block.endTime,
+        manualAmount:
+          block.isAmountManual && typeof block.manualAmount === "number"
+            ? block.manualAmount.toFixed(2)
+            : "",
       })),
     },
     settings,
@@ -313,6 +323,10 @@ export function buildShiftDraftFromExisting(shift: ShiftWithBlocks): ShiftDraft 
             agentName: block.agentName,
             startTime: block.startTime,
             endTime: block.endTime,
+            manualAmount:
+              block.isAmountManual && typeof block.manualAmount === "number"
+                ? block.manualAmount.toFixed(2)
+                : "",
           }))
         : [createEmptyBlock()],
   };
