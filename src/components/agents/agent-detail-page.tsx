@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { exportAgentPdf } from "@/lib/shifts/export";
+import { exportAgentExcel, exportAgentPdf } from "@/lib/shifts/export";
 import { useAgents } from "@/hooks/use-agents";
 import { useMonthlyData } from "@/hooks/use-monthly-data";
 import { buildAgentEvolution } from "@/lib/shifts/aggregation";
@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/stat-card";
-import { Coins, Download, TimerReset, Workflow } from "lucide-react";
+import { Coins, Download, FileSpreadsheet, TimerReset, Workflow } from "lucide-react";
 import { DataState } from "@/components/ui/data-state";
 
 type AgentDetailPageProps = {
@@ -84,10 +84,16 @@ export function AgentDetailPage({ agentId }: AgentDetailPageProps) {
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none"
             />
             {agent ? (
-              <Button onClick={() => exportAgentPdf(agent.name, monthKey, shifts)}>
-                <Download size={16} />
-                Exportar PDF
-              </Button>
+              <>
+                <Button onClick={() => exportAgentPdf(agent.name, monthKey, shifts)}>
+                  <Download size={16} />
+                  Exportar PDF
+                </Button>
+                <Button variant="secondary" onClick={() => exportAgentExcel(agent.name, monthKey, shifts)}>
+                  <FileSpreadsheet size={16} />
+                  Exportar Excel
+                </Button>
+              </>
             ) : null}
           </>
         }

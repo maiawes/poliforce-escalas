@@ -12,14 +12,18 @@ export const INITIAL_AGENTS: Agent[] = [
 
 export const DEFAULT_SETTINGS: Settings = {
   id: SETTINGS_DOC_ID,
-  sundayToThursdayHourValue: 40,
-  sundayToThursdayBonus: 30,
+  mondayToThursdayHourValue: 40,
+  mondayToThursdayBonus: 30,
   fridaySaturdayHourValue: 45,
   fridaySaturdayBonus: 30,
-  defaultStartTimeWeek: "20:00",
-  defaultEndTimeWeek: "03:00",
-  defaultStartTimeWeekend: "20:00",
-  defaultEndTimeWeekend: "06:00",
+  sundayHourValue: 40,
+  sundayBonus: 30,
+  defaultStartTimeMondayToThursday: "20:00",
+  defaultEndTimeMondayToThursday: "03:00",
+  defaultStartTimeFridaySaturday: "20:00",
+  defaultEndTimeFridaySaturday: "06:00",
+  defaultStartTimeSunday: "20:00",
+  defaultEndTimeSunday: "03:00",
 };
 
 export const WEEKDAY_LABELS = [
@@ -33,6 +37,7 @@ export const WEEKDAY_LABELS = [
 ];
 
 export const DAY_TYPE_LABELS = {
-  SUNDAY_TO_THURSDAY: "Domingo a quinta",
-  FRIDAY_SATURDAY: "Sexta ou sábado",
+  MONDAY_TO_THURSDAY: "Segunda a quinta",
+  FRIDAY_SATURDAY: "Sexta e sábado",
+  SUNDAY: "Domingo",
 } as const;

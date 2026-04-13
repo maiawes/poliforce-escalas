@@ -1,4 +1,4 @@
-export type DayType = "SUNDAY_TO_THURSDAY" | "FRIDAY_SATURDAY";
+export type DayType = "MONDAY_TO_THURSDAY" | "FRIDAY_SATURDAY" | "SUNDAY";
 
 export type ShiftFormMode = "simple" | "split";
 
@@ -12,14 +12,18 @@ export type Agent = {
 
 export type Settings = {
   id: string;
-  sundayToThursdayHourValue: number;
-  sundayToThursdayBonus: number;
+  mondayToThursdayHourValue: number;
+  mondayToThursdayBonus: number;
   fridaySaturdayHourValue: number;
   fridaySaturdayBonus: number;
-  defaultStartTimeWeek: string;
-  defaultEndTimeWeek: string;
-  defaultStartTimeWeekend: string;
-  defaultEndTimeWeekend: string;
+  sundayHourValue: number;
+  sundayBonus: number;
+  defaultStartTimeMondayToThursday: string;
+  defaultEndTimeMondayToThursday: string;
+  defaultStartTimeFridaySaturday: string;
+  defaultEndTimeFridaySaturday: string;
+  defaultStartTimeSunday: string;
+  defaultEndTimeSunday: string;
   updatedAt?: string;
 };
 

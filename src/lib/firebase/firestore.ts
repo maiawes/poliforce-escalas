@@ -76,9 +76,60 @@ export function subscribeToAgents(callback: (items: Agent[]) => void) {
 export function subscribeToSettings(callback: (settings: Settings) => void) {
   return onSnapshot(doc(db, "settings", SETTINGS_DOC_ID), (snapshot) => {
     const data = snapshot.data();
+    const rawSettings = data as
+      | (Partial<Settings> & {
+          sundayToThursdayHourValue?: number;
+          sundayToThursdayBonus?: number;
+          defaultStartTimeWeek?: string;
+          defaultEndTimeWeek?: string;
+          defaultStartTimeWeekend?: string;
+          defaultEndTimeWeekend?: string;
+        })
+      | undefined;
+
     callback({
       ...DEFAULT_SETTINGS,
-      ...(data as Settings | undefined),
+      ...rawSettings,
+      mondayToThursdayHourValue:
+        rawSettings?.mondayToThursdayHourValue ??
+        rawSettings?.sundayToThursdayHourValue ??
+        DEFAULT_SETTINGS.mondayToThursdayHourValue,
+      mondayToThursdayBonus:
+        rawSettings?.mondayToThursdayBonus ??
+        rawSettings?.sundayToThursdayBonus ??
+        DEFAULT_SETTINGS.mondayToThursdayBonus,
+      sundayHourValue:
+        rawSettings?.sundayHourValue ??
+        rawSettings?.sundayToThursdayHourValue ??
+        DEFAULT_SETTINGS.sundayHourValue,
+      sundayBonus:
+        rawSettings?.sundayBonus ??
+        rawSettings?.sundayToThursdayBonus ??
+        DEFAULT_SETTINGS.sundayBonus,
+      defaultStartTimeMondayToThursday:
+        rawSettings?.defaultStartTimeMondayToThursday ??
+        rawSettings?.defaultStartTimeWeek ??
+        DEFAULT_SETTINGS.defaultStartTimeMondayToThursday,
+      defaultEndTimeMondayToThursday:
+        rawSettings?.defaultEndTimeMondayToThursday ??
+        rawSettings?.defaultEndTimeWeek ??
+        DEFAULT_SETTINGS.defaultEndTimeMondayToThursday,
+      defaultStartTimeFridaySaturday:
+        rawSettings?.defaultStartTimeFridaySaturday ??
+        rawSettings?.defaultStartTimeWeekend ??
+        DEFAULT_SETTINGS.defaultStartTimeFridaySaturday,
+      defaultEndTimeFridaySaturday:
+        rawSettings?.defaultEndTimeFridaySaturday ??
+        rawSettings?.defaultEndTimeWeekend ??
+        DEFAULT_SETTINGS.defaultEndTimeFridaySaturday,
+      defaultStartTimeSunday:
+        rawSettings?.defaultStartTimeSunday ??
+        rawSettings?.defaultStartTimeWeek ??
+        DEFAULT_SETTINGS.defaultStartTimeSunday,
+      defaultEndTimeSunday:
+        rawSettings?.defaultEndTimeSunday ??
+        rawSettings?.defaultEndTimeWeek ??
+        DEFAULT_SETTINGS.defaultEndTimeSunday,
       id: SETTINGS_DOC_ID,
     });
   });

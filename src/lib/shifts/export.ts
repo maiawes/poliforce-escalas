@@ -4,8 +4,9 @@ import { utils, writeFile } from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { DashboardSummary, ShiftWithBlocks } from "@/types";
+import { getDayTypeFromDate } from "./calculations";
 import { buildExportRows } from "./aggregation";
-import { formatCurrency, formatDate, formatMonthLabel } from "./formatters";
+import { formatCurrency, formatDate, formatMonthLabel, getDayTypeLabel } from "./formatters";
 
 export function exportMonthlyExcel(monthKey: string, shifts: ShiftWithBlocks[]) {
   const worksheet = utils.json_to_sheet(buildExportRows(shifts));
@@ -40,7 +41,7 @@ export function exportMonthlyPdf(
     body: shifts.map((shift) => [
       formatDate(shift.date),
       shift.weekday,
-      shift.dayType === "FRIDAY_SATURDAY" ? "Sexta/Sabado" : "Domingo/Quinta",
+      getDayTypeLabel(getDayTypeFromDate(shift.date)),
       shift.blocks
         .map(
           (block) =>
@@ -128,4 +129,33 @@ export function exportAgentPdf(
   });
 
   pdf.save(`poliforce-${agentName.toLowerCase().replaceAll(" ", "-")}-${monthKey}.pdf`);
+}
+
+export function exportAgentExcel(
+  agentName: string,
+  monthKey: string,
+  shifts: ShiftWithBlocks[],
+) {
+  const relatedRows = shifts.flatMap((shift) =>
+    shift.blocks
+      .filter((block) => block.agentName === agentName)
+      .map((block) => ({
+        Data: formatDate(shift.date),
+        Dia: shift.weekday,
+        Tipo: getDayTypeLabel(getDayTypeFromDate(shift.date)),
+        Inicio: block.startTime,
+        Fim: block.endTime,
+        Horas: block.workedHours,
+        Valor: block.amount,
+        Observacoes: shift.notes || "-",
+      })),
+  );
+
+  const worksheet = utils.json_to_sheet(relatedRows);
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, worksheet, "Agente");
+  writeFile(
+    workbook,
+    `poliforce-${agentName.toLowerCase().replaceAll(" ", "-")}-${monthKey}.xlsx`,
+  );
 }

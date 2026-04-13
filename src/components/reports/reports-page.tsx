@@ -20,7 +20,7 @@ import {
   buildDashboardSummary,
   buildWeeklyChartData,
 } from "@/lib/shifts/aggregation";
-import { exportMonthlyExcel, exportMonthlyPdf } from "@/lib/shifts/export";
+import { exportAgentExcel, exportAgentPdf, exportMonthlyExcel, exportMonthlyPdf } from "@/lib/shifts/export";
 import { formatCurrency, toMonthKey } from "@/lib/shifts/formatters";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -161,13 +161,31 @@ export function ReportsPage() {
             {summary.perAgent.map((item) => (
               <div
                 key={item.agentId}
-                className="grid grid-cols-[1.2fr_0.8fr_0.7fr_0.7fr_0.8fr] gap-3 rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm"
+                className="grid grid-cols-[1.1fr_0.8fr_0.7fr_0.7fr_0.8fr_1.1fr] gap-3 rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm"
               >
                 <span className="font-semibold text-slate-900">{item.agentName}</span>
                 <span>{formatCurrency(item.totalAmount)}</span>
                 <span>{item.totalHours.toFixed(2)}h</span>
                 <span>{item.totalShifts}</span>
                 <span>{formatCurrency(item.averagePerShift)}</span>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    className="px-3"
+                    onClick={() => exportAgentPdf(item.agentName, monthKey, shifts)}
+                  >
+                    <Download size={16} />
+                    PDF
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="px-3"
+                    onClick={() => exportAgentExcel(item.agentName, monthKey, shifts)}
+                  >
+                    <FileSpreadsheet size={16} />
+                    Excel
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

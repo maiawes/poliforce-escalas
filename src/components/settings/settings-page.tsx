@@ -38,10 +38,10 @@ export function SettingsPage() {
         description="Ajuste valores, bônus e horários padrão sem alterar o código da aplicação."
       />
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-3">
         <Card className="space-y-4">
           <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold text-slate-950">
-            Domingo a quinta
+            Segunda a quinta
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -49,11 +49,11 @@ export function SettingsPage() {
               <Input
                 type="number"
                 step="0.01"
-                value={form.sundayToThursdayHourValue}
+                value={form.mondayToThursdayHourValue}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    sundayToThursdayHourValue: Number(event.target.value),
+                    mondayToThursdayHourValue: Number(event.target.value),
                   }))
                 }
               />
@@ -63,11 +63,11 @@ export function SettingsPage() {
               <Input
                 type="number"
                 step="0.01"
-                value={form.sundayToThursdayBonus}
+                value={form.mondayToThursdayBonus}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    sundayToThursdayBonus: Number(event.target.value),
+                    mondayToThursdayBonus: Number(event.target.value),
                   }))
                 }
               />
@@ -76,11 +76,11 @@ export function SettingsPage() {
               <label className="text-sm font-medium text-slate-700">Hora inicial</label>
               <Input
                 type="time"
-                value={form.defaultStartTimeWeek}
+                value={form.defaultStartTimeMondayToThursday}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    defaultStartTimeWeek: event.target.value,
+                    defaultStartTimeMondayToThursday: event.target.value,
                   }))
                 }
               />
@@ -89,11 +89,11 @@ export function SettingsPage() {
               <label className="text-sm font-medium text-slate-700">Hora final</label>
               <Input
                 type="time"
-                value={form.defaultEndTimeWeek}
+                value={form.defaultEndTimeMondayToThursday}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    defaultEndTimeWeek: event.target.value,
+                    defaultEndTimeMondayToThursday: event.target.value,
                   }))
                 }
               />
@@ -138,11 +138,11 @@ export function SettingsPage() {
               <label className="text-sm font-medium text-slate-700">Hora inicial</label>
               <Input
                 type="time"
-                value={form.defaultStartTimeWeekend}
+                value={form.defaultStartTimeFridaySaturday}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    defaultStartTimeWeekend: event.target.value,
+                    defaultStartTimeFridaySaturday: event.target.value,
                   }))
                 }
               />
@@ -151,11 +151,73 @@ export function SettingsPage() {
               <label className="text-sm font-medium text-slate-700">Hora final</label>
               <Input
                 type="time"
-                value={form.defaultEndTimeWeekend}
+                value={form.defaultEndTimeFridaySaturday}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    defaultEndTimeWeekend: event.target.value,
+                    defaultEndTimeFridaySaturday: event.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="space-y-4">
+          <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold text-slate-950">
+            Domingo
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">Valor da hora</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={form.sundayHourValue}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    sundayHourValue: Number(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">Bônus fixo</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={form.sundayBonus}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    sundayBonus: Number(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">Hora inicial</label>
+              <Input
+                type="time"
+                value={form.defaultStartTimeSunday}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    defaultStartTimeSunday: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">Hora final</label>
+              <Input
+                type="time"
+                value={form.defaultEndTimeSunday}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    defaultEndTimeSunday: event.target.value,
                   }))
                 }
               />

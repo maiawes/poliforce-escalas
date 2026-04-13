@@ -6,6 +6,7 @@ import {
   ShiftBlock,
   ShiftWithBlocks,
 } from "@/types";
+import { getDayTypeFromDate } from "./calculations";
 import { formatDate, getDayTypeLabel, roundCurrency } from "./formatters";
 
 export function combineShiftsAndBlocks(shifts: ShiftWithBlocks[], blocks: ShiftBlock[]) {
@@ -153,7 +154,7 @@ export function buildExportRows(shifts: ShiftWithBlocks[]): ExportRow[] {
   return shifts.map((shift) => ({
     data: formatDate(shift.date),
     dia: shift.weekday,
-    tipo: getDayTypeLabel(shift.dayType),
+    tipo: getDayTypeLabel(getDayTypeFromDate(shift.date)),
     agentes: shift.blocks
       .map(
         (block) =>

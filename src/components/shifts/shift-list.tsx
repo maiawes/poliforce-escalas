@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { Copy, FilePlus2, Pencil, Trash2 } from "lucide-react";
 import { deleteShift, duplicateShift } from "@/lib/firebase/firestore";
+import { getDayTypeFromDate } from "@/lib/shifts/calculations";
 import { formatCurrency, formatDate, formatMonthLabel, getDayTypeLabel } from "@/lib/shifts/formatters";
 import { ShiftWithBlocks, Settings } from "@/types";
 import { Card } from "@/components/ui/card";
@@ -29,11 +30,12 @@ export function ShiftList({ shifts, settings, monthKey, onMonthChange }: ShiftLi
   const [busyId, setBusyId] = useState("");
 
   const filtered = shifts.filter((shift) => {
+    const shiftDayType = getDayTypeFromDate(shift.date);
     const agentsLine = shift.blocks.map((block) => block.agentName).join(" ");
 
     const matchesAgent =
       agentFilter === "all" || shift.blocks.some((block) => block.agentId === agentFilter);
-    const matchesDayType = dayTypeFilter === "all" || shift.dayType === dayTypeFilter;
+    const matchesDayType = dayTypeFilter === "all" || shiftDayType === dayTypeFilter;
     const matchesSplit =
       splitFilter === "all" ||
       (splitFilter === "split" ? shift.isSplit : !shift.isSplit);
@@ -104,8 +106,9 @@ export function ShiftList({ shifts, settings, monthKey, onMonthChange }: ShiftLi
             <label className="text-sm font-medium text-slate-700">Tipo de dia</label>
             <Select value={dayTypeFilter} onChange={(event) => setDayTypeFilter(event.target.value)}>
               <option value="all">Todos</option>
-              <option value="SUNDAY_TO_THURSDAY">Domingo a quinta</option>
-              <option value="FRIDAY_SATURDAY">Sexta ou sábado</option>
+              <option value="MONDAY_TO_THURSDAY">Segunda a quinta</option>
+              <option value="FRIDAY_SATURDAY">Sexta e sábado</option>
+              <option value="SUNDAY">Domingo</option>
             </Select>
           </div>
           <div className="space-y-2">
@@ -162,7 +165,7 @@ export function ShiftList({ shifts, settings, monthKey, onMonthChange }: ShiftLi
                 <span>{formatDate(shift.date)}</span>
                 <span>{shift.weekday}</span>
                 <div className="flex flex-col gap-2">
-                  <span>{getDayTypeLabel(shift.dayType)}</span>
+                  <span>{getDayTypeLabel(getDayTypeFromDate(shift.date))}</span>
                   {shift.isSplit ? (
                     <Badge className="w-fit bg-amber-100 text-amber-800">Dividida</Badge>
                   ) : null}
@@ -224,7 +227,7 @@ export function ShiftList({ shifts, settings, monthKey, onMonthChange }: ShiftLi
                     <p className="text-sm text-slate-500">{shift.weekday}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge>{getDayTypeLabel(shift.dayType)}</Badge>
+                    <Badge>{getDayTypeLabel(getDayTypeFromDate(shift.date))}</Badge>
                     {shift.isSplit ? <Badge className="bg-amber-100 text-amber-800">Dividida</Badge> : null}
                   </div>
                 </div>

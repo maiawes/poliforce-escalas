@@ -15,19 +15,43 @@ export function getWeekdayLabel(date: string) {
 
 export function getDayTypeFromDate(date: string): DayType {
   const day = new Date(`${date}T12:00:00`).getDay();
-  return day === 5 || day === 6 ? "FRIDAY_SATURDAY" : "SUNDAY_TO_THURSDAY";
+  if (day === 0) {
+    return "SUNDAY";
+  }
+
+  if (day === 5 || day === 6) {
+    return "FRIDAY_SATURDAY";
+  }
+
+  return "MONDAY_TO_THURSDAY";
 }
 
 export function getShiftRule(dayType: DayType, settings: Settings = DEFAULT_SETTINGS) {
-  if (dayType === "FRIDAY_SATURDAY") {
+  if (dayType === "SUNDAY") {
     const maxHours = calculateWorkedHours(
-      settings.defaultStartTimeWeekend,
-      settings.defaultEndTimeWeekend,
+      settings.defaultStartTimeSunday,
+      settings.defaultEndTimeSunday,
     );
 
     return {
-      startTime: settings.defaultStartTimeWeekend,
-      endTime: settings.defaultEndTimeWeekend,
+      startTime: settings.defaultStartTimeSunday,
+      endTime: settings.defaultEndTimeSunday,
+      baseHourValue: settings.sundayHourValue,
+      bonus: settings.sundayBonus,
+      maxHours,
+      totalAmount: roundCurrency(settings.sundayHourValue * maxHours + settings.sundayBonus),
+    };
+  }
+
+  if (dayType === "FRIDAY_SATURDAY") {
+    const maxHours = calculateWorkedHours(
+      settings.defaultStartTimeFridaySaturday,
+      settings.defaultEndTimeFridaySaturday,
+    );
+
+    return {
+      startTime: settings.defaultStartTimeFridaySaturday,
+      endTime: settings.defaultEndTimeFridaySaturday,
       baseHourValue: settings.fridaySaturdayHourValue,
       bonus: settings.fridaySaturdayBonus,
       maxHours,
@@ -36,17 +60,17 @@ export function getShiftRule(dayType: DayType, settings: Settings = DEFAULT_SETT
   }
 
   const maxHours = calculateWorkedHours(
-    settings.defaultStartTimeWeek,
-    settings.defaultEndTimeWeek,
+    settings.defaultStartTimeMondayToThursday,
+    settings.defaultEndTimeMondayToThursday,
   );
 
   return {
-    startTime: settings.defaultStartTimeWeek,
-    endTime: settings.defaultEndTimeWeek,
-    baseHourValue: settings.sundayToThursdayHourValue,
-    bonus: settings.sundayToThursdayBonus,
+    startTime: settings.defaultStartTimeMondayToThursday,
+    endTime: settings.defaultEndTimeMondayToThursday,
+    baseHourValue: settings.mondayToThursdayHourValue,
+    bonus: settings.mondayToThursdayBonus,
     maxHours,
-    totalAmount: roundCurrency(settings.sundayToThursdayHourValue * maxHours + settings.sundayToThursdayBonus),
+    totalAmount: roundCurrency(settings.mondayToThursdayHourValue * maxHours + settings.mondayToThursdayBonus),
   };
 }
 
@@ -61,7 +85,7 @@ export function validateShiftDraft(draft: ShiftDraft, settings: Settings = DEFAU
     errors.push("Adicione ao menos um bloco de horário.");
   }
 
-  const dayType = draft.date ? getDayTypeFromDate(draft.date) : "SUNDAY_TO_THURSDAY";
+  const dayType = draft.date ? getDayTypeFromDate(draft.date) : "MONDAY_TO_THURSDAY";
   const rule = getShiftRule(dayType, settings);
 
   draft.blocks.forEach((block, index) => {

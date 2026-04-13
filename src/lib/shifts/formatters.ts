@@ -37,6 +37,6 @@ export function formatMonthLabel(monthKey: string) {
   }).format(new Date(year, month - 1, 1));
 }
 
-export function getDayTypeLabel(dayType: DayType) {
-  return DAY_TYPE_LABELS[dayType];
+export function getDayTypeLabel(dayType: DayType | string) {
+  return DAY_TYPE_LABELS[dayType as DayType] ?? dayType;
 }
